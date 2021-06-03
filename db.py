@@ -13,7 +13,7 @@ def sql_connection():
 
     cursor.execute("SELECT * FROM settings")
     if cursor.fetchone() == None:
-        cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?)", (None ,"https://cleaner.dadata.ru/api/v1/clean/addres", "", "ru"))
+        cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?)", (None ,"https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address", "", "ru"))
         con.commit()
         #print("Connection complete!")
 

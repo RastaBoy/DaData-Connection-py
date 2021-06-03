@@ -1,8 +1,9 @@
 import os
 from db import con, get_settings, update_settings
+from request import send_request
 
 main_menu = (
-    ("Сделать запрос", lambda: menu(trash)),
+    ("Сделать запрос", lambda: request_menu()),
     ("Настройки", lambda: menu(settings)),
     ("Выход", 0)
 )
@@ -19,6 +20,17 @@ trash = (
     ("Послать всё", 0),
     ("Назад", 0) 
 )
+
+def request_menu():
+    os.system("cls")
+    query = input("Введите запрос: ")
+    settings = get_settings(con)
+    response = send_request(settings, query)
+    
+    for item in response:
+        print(item)
+
+    os.system("pause")
 
 def show_settings():
     os.system('cls')
