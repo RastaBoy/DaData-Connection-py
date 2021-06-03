@@ -54,11 +54,13 @@ def menu(menu:tuple):
         try:
             answer = int(input("Выберите пункт меню: "))
             
-            if menu[answer - 1][1] != 0:
-                menu[answer - 1][1]()
+            if answer > 0:
+                if menu[answer - 1][1] != 0:
+                    menu[answer - 1][1]()
+                else:
+                    show = False
             else:
-                show = False
-
+                raise Exception("Некорректный ввод")
         except: 
             print("Некорректный ввод")
             os.system("pause")
