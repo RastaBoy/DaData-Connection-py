@@ -19,6 +19,7 @@ def sql_connection():
 
     return con
 
+
 def get_settings(con):
     cursor = con.cursor()
     cursor.execute("SELECT * FROM settings")
@@ -31,6 +32,7 @@ def get_settings(con):
     }
     return settings
 
+
 def update_settings(con, settings:dict):
     cursor = con.cursor()
     for key, value in settings.items():
@@ -38,6 +40,15 @@ def update_settings(con, settings:dict):
     
     con.commit()
     
+
+def default_settings(con):
+    settings = {
+        'URL' : "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address",
+        'API' : "",
+        'language' : "ru"
+    }
+    update_settings(con, settings)
+
 
 con = sql_connection()
 

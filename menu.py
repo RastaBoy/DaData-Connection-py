@@ -1,5 +1,5 @@
 import os
-from db import con, get_settings, update_settings
+from db import con, get_settings, update_settings, default_settings
 from request import send_request
 
 main_menu = (
@@ -12,12 +12,14 @@ settings = (
     ("Показать текущие настройки", lambda: show_settings()),
     ("Изменить URL", lambda: change_settings("URL")),
     ("Изменить API", lambda: change_settings("API")),
-    ("Изменить язык", lambda: change_settings("language")),
+    ("Изменить язык", lambda: menu(language)),
+    ("Вернуть настройки по-умолчанию", lambda: default_settings(con)),
     ("Назад", 0)
 )
 
-trash = (
-    ("Послать всё", 0),
+language = (
+    ("Русский", lambda: change_settings("language", "ru")),
+    ("Английский", lambda: change_settings("language", "en")),
     ("Назад", 0) 
 )
 
@@ -41,12 +43,16 @@ def show_settings():
     os.system("pause")
 
 
-def change_settings(key:str):
+def change_settings(key:str, value=None):
     os.system('cls')
 
-    value = input("Введите значение: ")
+    if value is None:
+        value = input("Введите значение: ")
     try:
         update_settings(con, dict.fromkeys([key], value))
+        os.system("cls")
+        print("Изменения были успешно внесены!")
+        os.system("pause")
     except:
         print("Что-то пошло не так...")
         os.system("pause")
