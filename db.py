@@ -33,10 +33,9 @@ def get_settings(con):
 
 def update_settings(con, settings:dict):
     cursor = con.cursor()
-
-    for key in settings:
-        if key != 'id':
-            cursor.execute(f"UPDATE settings SET '{key}' = ? WHERE id = ?", (settings[key], settings['id']))
+    for key, value in settings.items():
+        cursor.execute(f"UPDATE settings SET '{key}' = ? WHERE id = ?", (value, 1))
+    
     con.commit()
     
 

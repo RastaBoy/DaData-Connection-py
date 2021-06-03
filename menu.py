@@ -29,15 +29,12 @@ def show_settings():
     os.system("pause")
 
 
-def change_settings(name:str):
+def change_settings(key:str):
     os.system('cls')
-    settings = get_settings(con)
+
     value = input("Введите значение: ")
     try:
-        for key in settings:
-            if key == name:
-                settings[key] = value
-        update_settings(con, settings)
+        update_settings(con, dict.fromkeys([key], value))
     except:
         print("Что-то пошло не так...")
         os.system("pause")
