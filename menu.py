@@ -1,38 +1,70 @@
 import os
+from db import con, get_settings, update_settings
 
-main_menu = {
-    '1' : ("Сделать запрос", lambda: menu(trash)),
-    '2' : ("Настройки", lambda: menu(settings)),
-    '3' : ("Выход", 0)
-}
+main_menu = (
+    ("Сделать запрос", lambda: menu(trash)),
+    ("Настройки", lambda: menu(settings)),
+    ("Выход", 0)
+)
 
-settings = {
-    '1' : ("Ввести никнейм", 0),
-    '2' : ("Назад", 0)
-}
+settings = (
+    ("Показать текущие настройки", lambda: show_settings()),
+    ("Изменить URL", lambda: change_settings("URL")),
+    ("Изменить API", lambda: change_settings("API")),
+    ("Изменить язык", lambda: change_settings("language")),
+    ("Назад", 0)
+)
 
-trash = {
-    '1' : ("Послать всё нахуй", 0),
-    '2' : ("Назад", 0) 
-}
+trash = (
+    ("Послать всё", 0),
+    ("Назад", 0) 
+)
+
+def show_settings():
+    os.system('cls')
+    settings = get_settings(con)
+    for key in settings:
+        print(f"{key} : {settings[key]}")  
+
+    os.system("pause")
 
 
-def menu(menu:dict):
+def change_settings(name:str):
+    os.system('cls')
+    settings = get_settings(con)
+    value = input("Введите значение: ")
+    try:
+        for key in settings:
+            if key == name:
+                settings[key] = value
+        update_settings(con, settings)
+    except:
+        print("Что-то пошло не так...")
+        os.system("pause")
+
+
+def menu(menu:tuple):
     show = True
     while show:
         os.system('cls')
         
-        for i in menu:
-            print(f'{i}. {menu[i][0]}')
+        for i, item in enumerate(menu):
+            print(f"{i+1}. {item[0]}")
 
-        answer = input("Выберите пункт меню: ")
-        for i in menu:
-            if i == answer:
-                if menu[i][1] == 0:
-                    show = False
-                else:
-                    menu[i][1]()
+        try:
+            answer = int(input("Выберите пункт меню: "))
+            
+            if menu[answer - 1][1] != 0:
+                menu[answer - 1][1]()
+            else:
+                show = False
 
+        except: 
+            print("Некорректный ввод")
+            os.system("pause")
+
+
+        
 
 
         
