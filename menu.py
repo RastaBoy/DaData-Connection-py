@@ -1,6 +1,7 @@
 import os
+from utils import get_addresses
 from db import con, get_settings, update_settings, default_settings
-from request import send_request
+from request import get_response
 
 main_menu = (
     ("Сделать запрос", lambda: request_menu()),
@@ -23,14 +24,28 @@ language = (
     ("Назад", 0) 
 )
 
+
+def coordinates_menu(address:str):
+    response = get_response(settings, dict(query=address, count=1))
+    print(response)
+    os.system("pause")
+
+
+
 def request_menu():
     os.system("cls")
-    query = input("Введите запрос: ")
+    address = input("Введите запрос: ")
     settings = get_settings(con)
-    response = send_request(settings, query)
+    response = get_response(settings, dict(query=address))
+
+    addresses = get_addresses(response)
     
-    for item in response:
-        print(item)
+    address_menu = tuple()
+
+    for address in addresses:
+        address_menu += ((address, lambda: coordinates_menu(address)),)
+
+    menu(address_menu)
 
     os.system("pause")
 

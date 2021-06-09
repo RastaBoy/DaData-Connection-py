@@ -1,6 +1,6 @@
 import requests
 
-def send_request(params:dict, query:str):
+def get_response(params:dict, data:str):
     url = params['URL']
     token = params['API']
     lang = params['language']
@@ -12,24 +12,12 @@ def send_request(params:dict, query:str):
             "Accept": "application/json",
             "Authorization": f"Token {token}",
         },
-        json={
-            'query' : query,
-            'language' : lang
-        }
+        json=data
     )
-
-    answer = list()
 
     response = response.json()
     response = response['suggestions']
 
-    for item in response:
-        for key in item:
-            if key == 'unrestricted_value':
-                answer.append(item[key])
-    
-    #print(answer)
-
-    return answer
+    return response
 
 
