@@ -1,5 +1,5 @@
 import os
-from utils import get_addresses
+from utils import get_addresses, get_coordinates
 from db import con, get_settings, update_settings, default_settings
 from request import get_response
 
@@ -26,10 +26,11 @@ language = (
 
 
 def coordinates_menu(address:str):
+    settings = get_settings(con)
     response = get_response(settings, dict(query=address, count=1))
-    print(response)
-    os.system("pause")
-
+    response = get_coordinates(response)
+    print(f"Выбранный адрес находится на следующих координатах: {response[0]} , {response[1]}")
+    
 
 
 def request_menu():
@@ -43,11 +44,12 @@ def request_menu():
     address_menu = tuple()
 
     for item in addresses:
-        address_menu += ((item, lambda: coordinates_menu(item)),)
+        address_menu += ((item, lambda x: coordinates_menu(x)),)
 
     menu(address_menu)
 
     os.system("pause")
+
 
 def show_settings():
     os.system('cls')
@@ -86,13 +88,18 @@ def menu(menu:tuple):
             
             if answer > 0:
                 if menu[answer - 1][1] != 0:
-                    menu[answer - 1][1]()
+                    try:
+                        menu[answer - 1][1]()
+                    except TypeError:
+                        menu[answer - 1][1](menu[answer-1][0])
+                        show = False
                 else:
                     show = False
             else:
                 raise Exception("Какая-то беда")
         except Exception as e: 
             print("Что-то пошло не так...")
+            print(type(e))
             print(e)
             os.system("pause")
 
