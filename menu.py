@@ -42,8 +42,8 @@ def request_menu():
     
     address_menu = tuple()
 
-    for address in addresses:
-        address_menu += ((address, lambda: coordinates_menu(address)),)
+    for item in addresses:
+        address_menu += ((item, lambda: coordinates_menu(item)),)
 
     menu(address_menu)
 
@@ -90,9 +90,10 @@ def menu(menu:tuple):
                 else:
                     show = False
             else:
-                raise Exception("Некорректный ввод")
-        except: 
-            print("Некорректный ввод")
+                raise Exception("Какая-то беда")
+        except Exception as e: 
+            print("Что-то пошло не так...")
+            print(e)
             os.system("pause")
 
 
