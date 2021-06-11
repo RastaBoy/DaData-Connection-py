@@ -1,4 +1,5 @@
 import os
+from typing import Iterable
 from utils import get_addresses, get_coordinates
 from db import con, get_settings, update_settings, default_settings
 from request import get_response
@@ -6,7 +7,7 @@ from request import get_response
 main_menu = (
     ("Сделать запрос", lambda: request_menu()),
     ("Настройки", lambda: menu(settings)),
-    ("Выход", 0)
+    ("Выход", lambda: 0)
 )
 
 settings = (
@@ -15,21 +16,25 @@ settings = (
     ("Изменить API", lambda: change_settings("API")),
     ("Изменить язык", lambda: menu(language)),
     ("Вернуть настройки по-умолчанию", lambda: default_settings(con)),
-    ("Назад", 0)
+    ("Назад", lambda: 0)
 )
 
 language = (
     ("Русский", lambda: change_settings("language", "ru")),
     ("Английский", lambda: change_settings("language", "en")),
-    ("Назад", 0) 
+    ("Назад", lambda: 0) 
 )
 
+dialogue = (
+    ("Да", lambda x: x()),
+    ("Нет", lambda: 0)
+)
 
 def coordinates_menu(address:str):
     settings = get_settings(con)
     response = get_response(settings, dict(query=address, count=1))
     response = get_coordinates(response)
-    print(f"Выбранный адрес находится на следующих координатах: {response[0]} , {response[1]}")
+    return response
     
 
 
@@ -41,14 +46,14 @@ def request_menu():
 
     addresses = get_addresses(response)
     
-    address_menu = tuple()
+    address_menu = list()
 
     for item in addresses:
-        address_menu += ((item, lambda x: coordinates_menu(x)),)
+        address_menu.append((item, lambda x: print(f"Выбранный адрес находится на следующих координатах: {','.join(coordinates_menu(x))}"), item))
 
+    address_menu.append(("Назад", lambda: 0))
     menu(address_menu)
 
-    os.system("pause")
 
 
 def show_settings():
@@ -57,7 +62,6 @@ def show_settings():
     for key in settings:
         print(f"{key} : {settings[key]}")  
 
-    os.system("pause")
 
 
 def change_settings(key:str, value=None):
@@ -69,15 +73,12 @@ def change_settings(key:str, value=None):
         update_settings(con, dict.fromkeys([key], value))
         os.system("cls")
         print("Изменения были успешно внесены!")
-        os.system("pause")
     except:
         print("Что-то пошло не так...")
-        os.system("pause")
 
 
-def menu(menu:tuple):
-    show = True
-    while show:
+def menu(menu:Iterable):
+    while True:
         os.system('cls')
         
         for i, item in enumerate(menu):
@@ -87,21 +88,20 @@ def menu(menu:tuple):
             answer = int(input("Выберите пункт меню: "))
             
             if answer > 0:
-                if menu[answer - 1][1] != 0:
-                    try:
-                        menu[answer - 1][1]()
-                    except TypeError:
-                        menu[answer - 1][1](menu[answer-1][0])
-                        show = False
+                item = menu[answer-1]
+                func = item[1]
+                if func(*item[2:]) == 0:
+                    break
                 else:
-                    show = False
+                    os.system("pause")
             else:
-                raise Exception("Какая-то беда")
+                raise Exception("Некорректный ввод! Попробуйте еще раз...")
         except Exception as e: 
             print("Что-то пошло не так...")
             print(type(e))
             print(e)
             os.system("pause")
+
 
 
         
