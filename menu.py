@@ -57,9 +57,13 @@ def request_menu():
             address_menu.append((item, lambda x: print(f"Выбранный адрес находится на следующих координатах: {','.join(coordinates_menu(x))}"), item))
 
         address_menu.append(("Назад", lambda: 0))
-        menu(address_menu)
+        func = menu(address_menu)
+        os.system("pause")
+        return func
     else: 
         print("К сожалению, таких адресов не найдено...")
+        return 1
+
 
 
 def show_settings():
@@ -67,7 +71,7 @@ def show_settings():
     settings = get_settings(con)
     for key in settings:
         print(f"{key} : {settings[key]}")  
-
+    return 1
 
 
 def change_settings(key:str, value=None):
@@ -99,10 +103,13 @@ def menu(menu:Iterable):
             if answer > 0:
                 item = menu[answer]
                 func = item[1](*item[2:])
-                if func == 0:
-                    break
-                else:
+                if func is None:
+                    return -1
+                elif func == 0:
+                    return -1
+                elif func == 1:
                     os.system("pause")
+                    pass
             else:
                 raise Exception("Некорректный ввод! Попробуйте еще раз...")
         except Exception as e: 
@@ -117,5 +124,4 @@ def menu(menu:Iterable):
 
 
         
-
 
