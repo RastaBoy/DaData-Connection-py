@@ -5,12 +5,14 @@ from db import con, get_settings, update_settings, default_settings
 from request import get_response
 
 main_menu = (
+    ("--- DaData Connection Py --- \n", ),
     ("Сделать запрос", lambda: request_menu()),
     ("Настройки", lambda: menu(settings)),
     ("Выход", lambda: 0)
 )
 
 settings = (
+    ("--- Меню пользовательских настроек ---\n", ),
     ("Показать текущие настройки", lambda: show_settings()),
     ("Изменить URL", lambda: change_settings("URL")),
     ("Изменить API", lambda: change_settings("API")),
@@ -20,12 +22,14 @@ settings = (
 )
 
 language = (
+    ("--- Меню выбора языка ---\n", ),
     ("Русский", lambda: change_settings("language", "ru")),
     ("Английский", lambda: change_settings("language", "en")),
     ("Назад", lambda: 0) 
 )
 
 dialogue = (
+    ("Вы уверены?"),
     ("Да", lambda x: x()),
     ("Нет", lambda: 0)
 )
@@ -45,15 +49,17 @@ def request_menu():
     response = get_response(settings, dict(query=address))
 
     addresses = get_addresses(response)
-    
-    address_menu = list()
+    if len(addresses) > 0:
+        address_menu = list()
+        address_menu.append(("Выберите подходящий вам адрес: ", ))
 
-    for item in addresses:
-        address_menu.append((item, lambda x: print(f"Выбранный адрес находится на следующих координатах: {','.join(coordinates_menu(x))}"), item))
+        for item in addresses:
+            address_menu.append((item, lambda x: print(f"Выбранный адрес находится на следующих координатах: {','.join(coordinates_menu(x))}"), item))
 
-    address_menu.append(("Назад", lambda: 0))
-    menu(address_menu)
-
+        address_menu.append(("Назад", lambda: 0))
+        menu(address_menu)
+    else: 
+        print("К сожалению, таких адресов не найдено...")
 
 
 def show_settings():
@@ -82,15 +88,18 @@ def menu(menu:Iterable):
         os.system('cls')
         
         for i, item in enumerate(menu):
-            print(f"{i+1}. {item[0]}")
+            if i == 0:
+                print(item[0])
+            else:
+                print(f"{i}. {item[0]}")
 
         try:
             answer = int(input("Выберите пункт меню: "))
             
             if answer > 0:
-                item = menu[answer-1]
-                func = item[1]
-                if func(*item[2:]) == 0:
+                item = menu[answer]
+                func = item[1](*item[2:])
+                if func == 0:
                     break
                 else:
                     os.system("pause")
