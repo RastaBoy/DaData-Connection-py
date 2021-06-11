@@ -23,16 +23,23 @@ settings = (
 
 language = (
     ("--- Меню выбора языка ---\n", ),
-    ("Русский", lambda: change_settings("language", "ru")),
-    ("Английский", lambda: change_settings("language", "en")),
+    ("Русский", lambda: menu(dialogue_form(change_settings, ("language", "ru")))),
+    ("Английский", lambda: menu(dialogue_form(change_settings, ("language", "en")))),
     ("Назад", lambda: 0) 
 )
 
 dialogue = (
-    ("Вы уверены?"),
+    ("Вы уверены?", ),
     ("Да", lambda x: x()),
     ("Нет", lambda: 0)
 )
+
+def dialogue_form(func, params:tuple):
+    return [
+        ("Вы уверены?", ),
+        ("Да", lambda x, params: x(*params), func, params),
+        ("Нет", lambda: 0)
+    ]
 
 def coordinates_menu(address:str):
     settings = get_settings(con)
